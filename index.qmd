@@ -1,0 +1,7 @@
+---
+title: "ISSS608 - Visual Analytics and Applications"
+---
+
+Here you’ll find my coursework, including exercises and assignments enriched with visualizations and analytical insights. Feel free to explore the projects I’ve created during the course.
+
+-Son Pham-
