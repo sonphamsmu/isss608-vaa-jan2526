@@ -1,4 +1,5 @@
 /* css styles */
+
 .navbar {
   background-color: #bf0000 !important; 
 }
@@ -9,4 +10,34 @@
 
 .navbar a:hover, .navbar-nav .nav-link:hover {
   color: gray !important; 
+}
+
+/* === Dropdown navigation boxes === */
+
+/* Dropdown container */
+.navbar .dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.4rem 0;
+}
+
+/* Dropdown text */
+.navbar .dropdown-menu a {
+  color: #000000 !important;
+  font-weight: 500;
+  padding: 0.45rem 1rem;
+}
+
+/* Hover effect */
+.navbar .dropdown-menu a:hover {
+  background-color: #f5f5f5;
+  color: #000000;
+}
+
+/* Active item (current page) */
+.navbar .dropdown-menu .active,
+.navbar .dropdown-menu .active a {
+  background-color: #eaeaea;
+  color: #000000 !important;
 }
