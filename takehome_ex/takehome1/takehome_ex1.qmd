@@ -1,0 +1,179 @@
+---
+title: "Take-home Exercise 1: Visualization on Survey Analysis"
+author: "PHAM Hung Son"
+date: "Feb 08, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+format: html
+---
+
+![](images/clipboard-2471701355.png)
+
+^~*via\ VNU*~^
+
+# 1 Overview
+
+Survey analysis plays a critical role in transforming raw questionnaire responses into meaningful, relevant insights. By applying descriptive and visually-driven analytical techniques, patterns and relationships within survey data can be revealed to support evidence-based decision-making.
+
+This take-home exercise analyses a student survey dataset collected at the **University of Education, Vietnam National University, Hanoi**, focusing on factors that may influence students’ learning outcomes. The dataset captures information on students’ demographic background, socio-economic conditions, time allocation, academic performance (GPA), and perceptions of the learning environment.
+
+The objective of this exercise is to apply tidy data principles and data visualisation techniques using the **tidyverse** and **ggplot2** to uncover key observations from the survey. Emphasis is placed on producing clear, truthful, and enlightening visualisations that effectively communicate patterns in students’ learning experiences and outcomes.
+
+# 2 Getting started
+
+## 2.1 Installing and loading the required libraries
+
+The R packages used in this take-home exercise are:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readxl, tidyr, dplyr, ggplot2) for performing data science tasks such as importing, tidying, and wrangling data, as well as creating graphics;
+
+-   [**reshape2**](https://seananderson.ca/2013/10/19/reshape/) for transforming data between wide and long formats;
+
+-   [**ggthemr**](https://www.shanelynn.ie/themes-and-colours-for-r-ggplots-with-ggthemr/) for aesthetic themes created by user, Ciarán Tobin;
+
+-   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots;
+
+-   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty; and
+
+-   [**ggpubr**](https://rpkgs.datanovia.com/ggpubr/) for creating publication ready ggplot2 plots.
+
+```{r}
+pacman::p_load(tidyverse, readxl, ggrepel, ggthemes, ggridges, ggdist, patchwork, scales)
+```
+
+## 2.2 Importing data
+
+In this exercise, we will use the [Dataset of factors affecting learning outcomes of students at the University of Education, Vietnam National University, Hanoi](https://www.sciencedirect.com/science/article/pii/S2352340925001702). The survey dataset is provided in Excel format, accompanied by a detailed codebook that explains the meaning and coding of each variable.
+
+The code chunk below imports *Database paper.xlsx* into R environment by using *read_excel()* function of **readxl** package.
+
+```{r}
+survey <- read_excel("data/Database paper.xlsx")
+glimpse(survey)
+```
+
+## 2.3 Data Cleaning
+
+**Variable Recoding:** Most survey variables are coded numerically but represent categorical or ordinal responses. Based on the codebook, selected variables are recoded into meaningful factor labels to improve interpretability in later visualisations.
+
+```{r}
+survey1 <- survey %>%
+  mutate(
+    Year = factor(Year,
+                  levels = 1:5,
+                  labels = c("First-year", "Second-year", 
+                             "Third-year", "Fourth-year", "Graduated")),
+    
+    Gender = factor(Gender,
+                    levels = c(1, 2),
+                    labels = c("Male", "Female")),
+    
+    GPA = factor(GPA,
+                 levels = 1:5,
+                 labels = c("Poor", "Average", "Fair", 
+                            "Good", "Excellent"),
+                 ordered = TRUE)
+  )
+
+```
+
+**Missing values** are inspected to ensure they do not distort visual interpretation. Luckily, we do not find any missing values in this dataset.
+
+```{r}
+colSums(is.na(survey1))
+```
+
+# 3 Overview of Respondent Profile
+
+Before analysing learning outcomes, we want to understand **who the respondents are**. This section profiles students by:
+
+-   year of study
+
+-   gender
+
+-   socio-economic background indicators
+
+These variables provide essential context for interpreting later patterns related to GPA and learning experiences.
+
+## 3.1 Distribution of Students by Year of Study
+
+```{r}
+p1 <- survey1 %>%
+  count(Year) %>%
+  ggplot(aes(x = Year, y = n)) +
+  geom_col(fill = "#4C72B0") +
+  labs(
+    title = "Distribution of Students by Year of Study & Gender",
+    x = "Year of Study",
+    y = "Number of Students"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+p2 <- survey1 %>%
+  count(Gender) %>%
+  ggplot(aes(x = Gender, y = n, fill = Gender)) +
+  geom_col(show.legend = FALSE) +
+  labs(
+    x = "Gender",
+    y = "Number of Students"
+  ) +
+  theme_minimal()
+p1 + p2
+```
+
+::: {.callout-note title="Observation"}
+The distribution of respondents shows a strong concentration of **graduated students**, indicating that individuals who have completed their studies form the largest subgroup in the survey sample. This suggests that the dataset largely reflects retrospective perspectives on learning experiences rather than those of students currently enrolled in earlier years of study.
+
+In addition, the gender breakdown reveals that **females** are the majority among respondents. It implies that later findings may be more representative of female students' experiences.
+
+As a result, interpretations of learning outcomes and associated factors should be made with caution, recognising the **potential influence** of both graduation status and gender imbalance on the observed patterns.
+:::
+
+```{r}
+survey1 %>%
+  select(Policy_Stu, Minority_Stu, Poor_Stu) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Indicator",
+    values_to = "Status"
+  ) %>%
+  mutate(
+    Status = factor(Status, levels = c(1, 2), labels = c("Yes", "No"))
+  ) %>%
+  count(Indicator, Status) %>%
+  ggplot(aes(x = Indicator, y = n, fill = Status)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Socio-Economic Background of Respondents",
+    x = "Indicators",
+    y = "Number of Students",
+    fill = "Status"
+  ) +
+  theme_minimal()
+```
+
+::: callout-note
+While the majority of students report not belonging to special categories, a non-trivial proportion indicate receiving government policy support. These students may face additional challenges that affect their learning outcomes, such as limited access to resources or heightened financial pressure. Subsequent analyses can explore whether such socio-economic conditions are associated with distinct patterns in study time, academic performance, or perceptions of institutional support.
+:::
+
+# Reference
+
+-   Kam, T. S. (2024). *A Layered Grammar of Graphics: ggplot2 methods.* <https://r4va.netlify.app/chap01#essential-grammatical-elements-in-ggplot2-stat>
+
+-   Hadley Wickham (2023) [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/). Online 3rd edition.
+
+-   Winston Chang (2013) [R Graphics Cookbook 2nd edition](https://r-graphics.org/). Online version.
+
+-   Healy, Kieran (2019) [Data Visualization: A practical introduction](https://socviz.co/). Online version
+
+-   [Learning ggplot2 on Paper – Components](https://henrywang.nl/learning-ggplot2-on-paper-components/)
+
+-   [Learning ggplot2 on Paper – Layer](https://henrywang.nl/learning-ggplot2-on-paper-layer/)
+
+-   [Learning ggplot2 on Paper – Scale](https://henrywang.nl/tag/learning-ggplot2-on-paper/)
