@@ -13,7 +13,7 @@ format: html
 
 ![](images/clipboard-2471701355.png)
 
-^~*via\ VNU*~^
+^~*via VNU*~^
 
 # 1 Overview
 
@@ -78,7 +78,6 @@ survey1 <- survey %>%
                             "Good", "Excellent"),
                  ordered = TRUE)
   )
-
 ```
 
 **Missing values** are inspected to ensure they do not distort visual interpretation. Luckily, we do not find any missing values in this dataset.
@@ -100,6 +99,8 @@ Before analysing learning outcomes, we want to understand **who the respondents 
 These variables provide essential context for interpreting later patterns related to GPA and learning experiences.
 
 ## 3.1 Distribution of Students by Year of Study
+
+We will plot simple bar charts using `ggplot`, then put them together using `patchwork` as shown in code chunks below:
 
 ```{r}
 p1 <- survey1 %>%
@@ -128,7 +129,7 @@ p1 + p2
 ```
 
 ::: {.callout-note title="Observation"}
-The distribution of respondents shows a strong concentration of **graduated students**, indicating that individuals who have completed their studies form the largest subgroup in the survey sample. This suggests that the dataset largely reflects retrospective perspectives on learning experiences rather than those of students currently enrolled in earlier years of study.
+The distribution of respondents shows a strong concentration of **graduated students**, indicating that individuals who have completed their studies form the largest subgroup in this survey. This suggests that the dataset largely reflects retrospective perspectives on learning experiences rather than those of students currently enrolled in earlier years of study.
 
 In addition, the gender breakdown reveals that **females** are the majority among respondents. It implies that later findings may be more representative of female students' experiences.
 
