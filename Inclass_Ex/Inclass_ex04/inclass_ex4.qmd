@@ -1,0 +1,24 @@
+---
+title: "In-class Exercise 4"
+author: "PHAM Hung Son"
+date: "Jan 31, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+format: html
+---
+
+## 1. Standard Deviation Plot
+
+![](images/clipboard-3291885165.png)
+
+[Link](https://public.tableau.com/views/agesexpyramid_inclass_ex3/Dashboard1?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link) to the publish
+
+## 2. Likert Plot
+
+![](images/clipboard-2508557166.png)
+
+[Link](https://public.tableau.com/app/profile/son.pham1375/viz/inclassex4b/Dashboard1) to the publish
