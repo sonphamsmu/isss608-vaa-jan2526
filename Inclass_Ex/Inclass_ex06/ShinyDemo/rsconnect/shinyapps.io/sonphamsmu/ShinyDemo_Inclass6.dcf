@@ -1,0 +1,12 @@
+name: ShinyDemo_Inclass6
+title: ShinyDemo_Inclass6
+username: sonphamsmu
+account: sonphamsmu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16729674
+bundleId: 11610411
+url: https://sonphamsmu.shinyapps.io/ShinyDemo_Inclass6/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
