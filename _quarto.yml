@@ -38,8 +38,8 @@ website:
             text: Hands-on Exercise 5d
           - href: Hands-on_Ex/Hands-on_ex05/handson_ex5e.html
             text: Hands-on Exercise 5e
-          - href: Hands-on_Ex/Hands-on_ex06/handson_ex6.html
-            text: Hands-on Exercise 6
+          - href: Hands-on_Ex/Hands-on_ex07/handson_ex7.html
+            text: Hands-on Exercise 7
       - text: In-class Exercise
         menu: 
           - href: Inclass_Ex/Inclass_ex01/inclass_ex1.html
