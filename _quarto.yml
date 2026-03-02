@@ -40,6 +40,12 @@ website:
             text: Hands-on Exercise 5e
           - href: Hands-on_Ex/Hands-on_ex07/handson_ex7.html
             text: Hands-on Exercise 7
+          - href: Hands-on_Ex/Hands-on_ex08/handson_ex8.html
+            text: Hands-on Exercise 8
+          - href: Hands-on_Ex/Hands-on_ex08/handson_ex8b.html
+            text: Hands-on Exercise 8b
+          - href: Hands-on_Ex/Hands-on_ex08/handson_ex8c.html
+            text: Hands-on Exercise 8c
       - text: In-class Exercise
         menu: 
           - href: Inclass_Ex/Inclass_ex01/inclass_ex1.html
