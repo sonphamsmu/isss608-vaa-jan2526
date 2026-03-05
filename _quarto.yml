@@ -60,6 +60,8 @@ website:
         menu: 
           - href: takehome_ex/takehome1/takehome_ex1.html
             text: Take-home Exercise 1
+          - href: takehome_ex/takehome2/takehome_ex2.html
+            text: Take-home Exercise 2
 
 format:
   html:
