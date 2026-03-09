@@ -21,7 +21,7 @@ The **COFINFAD (Colombian Fintech Financial Analytics Dataset)** addresses this 
 
 The objective of this Exploratory Data Analysis (EDA) module is to uncover behavioral, demographic, and engagement patterns that may influence:
 
--   Product adoption dynamics & Digital app engagement
+-   Product adoption & App engagement
 
 -   Satisfaction and Net Promoter Score (NPS)
 
@@ -35,11 +35,9 @@ The EDA module is structured to address the following key questions:
 
 1.  *How are customers distributed across demographic and income segments?*
 
-2.  *How do transaction frequency and transaction value vary across customer segments?*
+2.  *What is the relationship between digital engagement (app logins, feature diversity) and customer loyalty metrics (CLV, NPS)?*
 
-3.  *What is the relationship between digital engagement (app logins, feature diversity) and transactions behavior?*
-
-4.  *Are satisfaction and NPS aligned with behavioral indicators such as transaction volume and active products?*
+3.  *Are satisfaction and NPS aligned with behavioral indicators such as transaction volume and active products?*
 
 # 2 Getting started
 
@@ -60,7 +58,7 @@ The R packages used in this take-home exercise are:
 -   [**patchwork**](https://cran.r-project.org/web/packages/patchwork/index.html): to prepare composite figure created using **ggplot2.**
 
 ```{r}
-pacman::p_load(tidyverse, lubridate, ggridges, ggdist, ggstatsplot, patchwork, plotly)
+pacman::p_load(tidyverse, ggridges, ggdist, ggstatsplot, patchwork)
 ```
 
 ## 2.2 Importing data
@@ -138,11 +136,30 @@ transactions_data %>%
   summarise(across(everything(), ~sum(is.na(.))))
 ```
 
-### 2.3.3 Deriving Variables
+### 2.3.3 Data Validation Checks
 
-**Age Group:** Age is grouped into interpretable bins for later filtering and segmentation analysis.
+Basic statistical summaries using `summary()` are performed to confirms data reliability before proceeding to exploratory visualization.
 
 ```{r}
+summary(customer_data$age)
+summary(customer_data$churn_probability)
+summary(customer_data$customer_lifetime_value)
+```
+
+```{r}
+write_rds(customer_data, "data/rds/customer_data.rds")
+write_rds(transactions_data, "data/rds/transactions_data.rds")
+```
+
+# 3. Univariate Analysis
+
+## 3.1 Demographic distributions of customer
+
+### 3.1.1 Age & Gender
+
+We will use simple `ggplot()` plots to have an overview of the distribution of customer's age and gender. We group customers into different age groups for better visualization.
+
+```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
 customer_data <- customer_data %>%
   mutate(
     age = as.integer(age),  
@@ -161,29 +178,8 @@ customer_data <- customer_data %>%
       levels = c("<18", "18-25", "26-35", "36-45", "46-55", "56-65", "65+", "Unknown")
     )
   )
+
 table(customer_data$age_group, useNA = "ifany")
-```
-
-### 2.3.4 Data Validation Checks
-
-Basic statistical summaries using `summary()` are performed to confirms data reliability before proceeding to exploratory visualization.
-
-```{r}
-summary(customer_data$age)
-summary(customer_data$churn_probability)
-summary(customer_data$customer_lifetime_value)
-```
-
-```{r}
-write_rds(customer_data, "data/rds/customer_data.rds")
-write_rds(transactions_data, "data/rds/transactions_data.rds")
-```
-
-# 3. Univariate Analysis
-
-## 3.1 Demographic distributions of customer (age, gender, income, location)
-
-```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
 age_group_summary <- customer_data %>%
   count(age_group) %>%
   mutate(
@@ -218,8 +214,14 @@ ch2 <- ggplot(customer_data, aes(x = gender)) +
 ch1 + ch2
 ```
 
+::: callout-note
+The distribution between male and female is relatively even, same for the age group distribution, but the customers are only concise into 3 different groups. This suggest that the business is targeting customers in particular age groups, rather than in gender sections.
+:::
+
+### 3.1.2 Income Brackets & Educational Level
+
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
-ggplot(customer_data, aes(x = income_bracket)) +
+ch3 <- ggplot(customer_data, aes(x = income_bracket)) +
   geom_bar(fill = "steelblue") +
   labs(
     title = "Distribution of Customer Income Brackets",
@@ -227,16 +229,12 @@ ggplot(customer_data, aes(x = income_bracket)) +
     y = "Number of Customers"
   ) +
   theme_minimal()
-```
 
-**Education Level**
-
-```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
 edu_sum <- customer_data %>%
   count(education_level, sort = TRUE) %>%
   mutate(education_level = fct_inorder(education_level))
 
-ggplot(edu_sum, aes(x = n, y = education_level)) +
+ch4 <- ggplot(edu_sum, aes(x = n, y = education_level)) +
   geom_segment(aes(x = 0, xend = n, yend = education_level), linewidth = 2) +
   geom_point(size = 3) +
   labs(
@@ -245,31 +243,19 @@ ggplot(edu_sum, aes(x = n, y = education_level)) +
     y = "Edu Lvl"
   ) +
   theme_minimal()
+
+ch3 + ch4
 ```
 
-**Martial Status**
-
-```{r}
-mar_sum <- customer_data %>%
-  count(marital_status, sort = TRUE) %>%
-  mutate(marital_status = fct_inorder(marital_status))
-
-ggplot(mar_sum, aes(x = n, y = marital_status)) +
-  geom_segment(aes(x = 0, xend = n, yend = marital_status), linewidth = 2) +
-  geom_point(size = 3) +
-  labs(
-    title = "Marital Status Distribution",
-    x = "Number of Customers",
-    y = "Marital Status"
-  ) +
-  theme_minimal()
-```
+::: callout-note
+The majority of customers fall within the **low to medium** income segment, only a small proportion belong to the **very high** category. On the other hand, most customers have either a **Bachelor’s degree** or a **High School qualification**, while significantly fewer **Master’s or PhD degrees**. This pattern may reflect that the service is accessible to the broader population rather than exclusively high-net-worth users.
+:::
 
 ## 3.2 Customer Engagement Behaviour
 
-Customer engagement is an important indicator of platform activity and potential retention.
+Customer engagement is an important indicator of platform activity and potential retention. We will use ggplot() to have a look at several indicators.
 
-**App Login Frequency Distribution**
+### 3.2.1 App Login Frequency Distribution
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
 ggplot(customer_data, aes(x = app_logins_frequency)) +
@@ -286,36 +272,68 @@ ggplot(customer_data, aes(x = app_logins_frequency)) +
   theme_minimal()
 ```
 
-**Satisfaction Score Distribution**
+::: callout-note
+The majority of customers access the application between **10 and 30 times per month**, reflecting regular engagement with the platform. The right-skewed distribution suggests the presence of a smaller group of highly active users who log in significantly more frequently, potentially representing customers with higher financial activity.
+:::
+
+### 3.2.2 Satisfaction Score Distribution
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
-ggplot(customer_data, aes(x = satisfaction_score)) +
-  geom_histogram(
-    bins = 10,
-    fill = "orange",
-    color = "white"
-  ) +
+customer_data <- customer_data %>%
+  mutate(
+    satisfaction_score = factor(
+      satisfaction_score,
+      levels = c(1,2,3,4,5,6),
+      labels = c(
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      )
+    )
+  )
+satisfaction_summary <- customer_data %>%
+  count(satisfaction_score) %>%
+  mutate(prop = n / sum(n))
+ggplot(satisfaction_summary,
+       aes(x = "", y = prop, fill = satisfaction_score)) +
+  geom_col(width = 0.7) +
+  scale_fill_brewer(palette = "RdYlGn") +
+  scale_y_continuous(labels = scales::percent) +
   labs(
-    title = "Distribution of Customer Satisfaction Scores",
-    x = "Satisfaction Score",
-    y = "Frequency"
+    title = "Customer Satisfaction Distribution",
+    x = NULL,
+    y = "Percentage of Customers",
+    fill = "Satisfaction Level"
   ) +
   theme_minimal()
 ```
 
-**CLV Distribution**
+::: callout-note
+The majority of customers report satisfaction scores in higher categories, particularly 4 and 5. Very few respondents fall into the lower satisfaction levels, suggesting generally positive customer sentiment toward the platform.
+:::
+
+### 3.2.3 CLV Distribution
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
-ggplot(customer_data, aes(x = customer_lifetime_value)) +
-  geom_density(fill = "purple", alpha = 0.6) +
-  scale_x_log10() +
+customer_data <- customer_data %>%
+  mutate(clv_usd = customer_lifetime_value / 4000)
+ggplot(customer_data, aes(x = clv_usd)) +
+  geom_density(fill = "purple", alpha = 0.7) +
+  scale_x_continuous(labels = scales::label_dollar()) +
   labs(
     title = "Distribution of Customer Lifetime Value",
-    x = "Customer Lifetime Value (log scale)",
+    x = "Customer Lifetime Value (USD)",
     y = "Density"
   ) +
   theme_minimal()
 ```
+
+::: callout-note
+The CLV distribution is heavily right-skewed, indicating that while most customers generate relatively low lifetime value, a small proportion of customers contribute disproportionately high value. Align with the Demographic findings above, this CLV pattern suggest that the platform did not generate revenue from the low-to-middle majority of customers, and it is not the main focus of the platform.
+:::
 
 **Churn Probability Distribution**
 
@@ -329,6 +347,10 @@ ggplot(customer_data, aes(x = churn_probability)) +
   ) +
   theme_minimal()
 ```
+
+::: callout-note
+Most customers have a predicted churn risk between **0.30 and 0.40**, and fall into a moderate churn risk category. Very few customers exhibit extremely low or extremely high churn probabilities, suggesting that the overall customer base demonstrates relatively balanced retention risk levels.
+:::
 
 **Product ownership distribution**
 
@@ -358,22 +380,32 @@ ggplot(prod_long, aes(x = product, y = prop, fill = has_product)) +
   theme_minimal()
 ```
 
+::: callout-note
+Savings Account and Credit Card are the main forces of the platform with ownership rates more than half, while the other products saw less than 50% ownership.
+:::
+
 **NPS distribution**
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
-ggplot(customer_data, aes(x = nps_score, y = "")) +
-  stat_slabinterval(point_interval = median_qi, .width = c(.5, .8, .95)) +
+ggplot(customer_data, aes(x = nps_score)) +
+  geom_density(fill = "lightgreen", alpha = 0.6) +
   labs(
-    title = "NPS Score Distribution (Slab + Interval)",
-    x = "NPS Score (0–10)",
-    y = NULL
+    title = "NPS Score Distribution",
+    x = "NPS Score",
+    y = "Density"
   ) +
   theme_minimal()
 ```
 
+::: callout-note
+Net Promoter Score (NPS) is concentrated in the **negative range**, with most values clustering around approximately **-30 to -10**. This indicates that a larger proportion of customers are categorized as **detractors**, suggesting relatively low customer advocacy for the platform.
+:::
+
 # 4. Bivariate / Multivariate Analysis
 
-**App Login Frequency vs Churn Probability**
+While univariate analysis provides insights into the distribution of individual variables, bivariate and multivariate analysis helps uncover relationships between customer characteristics, engagement behaviour, and financial outcomes. This section explores how different customer attributes interact with key performance indicators such as **CLV, satisfaction, engagement, and churn probability**.
+
+## 4.1 App Login Frequency vs Churn Probability
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
 ggplot(customer_data, aes(x = app_logins_frequency, y = churn_probability)) +
@@ -387,21 +419,39 @@ ggplot(customer_data, aes(x = app_logins_frequency, y = churn_probability)) +
   theme_minimal()
 ```
 
-**Transaction Frequency vs Satisfaction Score**
+::: callout-note
+The scatter plot suggests a slight negative relationship between monthly app login frequency and churn probability. Customers who log into the application more frequently tend to exhibit lower predicted churn probabilities, while customers with lower login frequency show a wider range of churn risk. This pattern indicates that higher engagement with the platform may be associated with improved customer retention.
+:::
+
+## 4.2 Transaction Frequency vs Satisfaction Score
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
-ggplot(customer_data, aes(x = tx_count, y = satisfaction_score)) +
-  geom_point(alpha = 0.3) +
-  geom_smooth(method = "loess", color = "darkgreen") +
+tx_sat_summary <- customer_data %>%
+  group_by(satisfaction_score) %>%
+  summarise(
+    avg_tx = mean(transaction_frequency, na.rm = TRUE)
+  )
+
+ggplot(tx_sat_summary,
+       aes(x = avg_tx,
+           y = factor(satisfaction_score),
+           fill = factor(satisfaction_score))) +
+  geom_col() +
+  scale_fill_brewer(palette = "RdYlGn") +
   labs(
-    title = "Transaction Activity and Customer Satisfaction",
-    x = "Total Number of Transactions",
-    y = "Satisfaction Score"
+    title = "Average Transaction Frequency by Satisfaction Score",
+    x = "Average Transaction Frequency",
+    y = "Satisfaction Score",
+    fill = "Satisfaction Level"
   ) +
   theme_minimal()
 ```
 
-**App Logins vs NPS Score**
+::: callout-note
+Transaction activity peaks around **satisfaction level 4**, suggesting that customers who are reasonably satisfied with the platform tend to engage more frequently in transactions. In contrast, customers with lower satisfaction scores demonstrate lower transaction frequency, indicating weaker engagement with the platform.
+:::
+
+## 4.3 App Logins vs NPS Score
 
 ```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
 ggplot(customer_data, aes(x = app_logins_frequency, y = nps_score)) +
@@ -415,30 +465,135 @@ ggplot(customer_data, aes(x = app_logins_frequency, y = nps_score)) +
   theme_minimal()
 ```
 
-More comparisons to consider:
-
--   CLV vs active products
-
--   Satisfaction vs NPS
-
--   Transaction volume vs churn / satisfaction / NPS
+::: callout-note
+The relationship between monthly app login frequency and Net Promoter Score (NPS) appears relatively weak, with NPS values remaining largely negative across different levels of app engagement. While customers with higher login frequency show slightly greater variability in NPS scores, the overall distribution suggests that increased app usage does not strongly correspond to higher customer advocacy.
+:::
 
 # 5. Transaction Behavior
 
-(ongoing)
+By analyzing transaction patterns over time and across different transaction types, we can better understand user activity levels and behavioral trends.
 
--   Transaction types distribution
+This section explores key aspects of transaction behavior including transaction volume distribution, transaction type composition, and transaction patterns.
 
--   Amount distribution
+## 5.1 Density Plot of Transaction Amount
 
--   Time trend of transactions
+```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
+transactions_data <- transactions_data %>%
+  mutate(amount_usd = amount / 4000)
+ggplot(transactions_data, aes(x = amount_usd)) +
+  geom_density(fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Distribution of Transaction Amounts in US Dollars",
+    x = "Transaction Amount (USD)",
+    y = "Density"
+  ) +
+  theme_minimal()
+```
 
--   Weekend vs weekday pattern
+::: callout-note
+The distribution of transaction amounts is highly right-skewed, indicating that most transactions involve relatively small amounts, while a smaller number of transactions are significantly larger in value. This pattern is typical in financial transaction data, where everyday payments dominate transaction counts, while large-value transactions occur less frequently.
+:::
 
-# 6. Interactive Design for Shiny
+## 5.2 Transaction Types Distribution
+
+```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
+tx_type_summary <- transactions_data %>%
+  count(type)
+
+ggplot(tx_type_summary, aes(x = reorder(type, n), y = n, fill = type)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Transaction Type Distribution",
+    x = "Transaction Type",
+    y = "Number of Transactions"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+::: callout-note
+Transfer and Payment activities are most commonly performed by customers, indicating those are core functions that customers rely on regularly.
+:::
+
+## 5.3 Transaction Activity Over Time
+
+Examining transaction patterns over time can reveal customer activity cycles.
+
+```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
+daily_tx <- transactions_data %>%
+  group_by(date) %>%
+  summarise(tx_count = n())
+
+ggplot(daily_tx, aes(x = date, y = tx_count)) +
+  geom_line(color = "darkgreen") +
+  labs(
+    title = "Daily Transaction Volume",
+    x = "Date",
+    y = "Number of Transactions"
+  ) +
+  theme_minimal()
+```
+
+::: callout-note
+The daily transaction volume remains relatively stable throughout the year, with the number of transactions generally fluctuating between approximately **8,600 and 9,000 transactions per day**.
+
+Higher number of transactions can be observed during January, June, July and December, suggest these are festive months in the year, which lead to higher transaction activities.
+:::
+
+## 5.4 Weekend vs Weekday Transaction Activity
+
+```{r, fig.width=8, fig.height=8, out.width="100%", dpi=300}
+transactions_data <- transactions_data %>%
+  mutate(
+    weekday = weekdays(date)
+  )
+transactions_data <- transactions_data %>%
+  mutate(
+    day_type = ifelse(weekday %in% c("Saturday","Sunday"),
+                      "Weekend",
+                      "Weekday")
+  )
+
+tx_daytype <- transactions_data %>%
+  group_by(day_type) %>%
+  summarise(tx_count = n())
+
+ggplot(tx_daytype, aes(x = day_type, y = tx_count, fill = day_type)) +
+  geom_col() +
+  labs(
+    title = "Weekend vs Weekday Transactions",
+    x = "Day Type",
+    y = "Number of Transactions"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+::: callout-note
+Transactions on Weekends make up for about 30% of the transactions, suggest that the platform is being used more often on weekend by the customers, comparing to the amount of weekday activities.
+:::
+
+# 6 Summary of Exploratory Data Analysis
+
+-   From the univariate analysis, the majority of customers fall within the **low to medium income bracket**, indicating that the platform serves the broader population rather than exclusively high networth users, and most of them log into the application between **10 and 30 times per month**, reflecting consistent interaction with the platform.
+
+-   The distribution of customer lifetime value (CLV) is strongly **right-skewed**, meaning that the platform did not generate revenue from the low-to-middle majority of customers, and it is not the main focus of the platform.
+
+-   Satisfaction scores are largely concentrated in the **moderate to high satisfaction levels**, suggesting generally positive user experiences. However, the **Net Promoter Score (NPS) distribution remains mostly negative**, indicating that although customers may be moderately satisfied, they are less likely to recommend the platform to others.
+
+-   Relationship analyses highlight several important behavioral patterns. **Higher app login frequency is associated with slightly lower churn probability**, suggesting that increased engagement may contribute to improved customer retention. However, the relationship between **app engagement and NPS appears relatively weak**, indicating that higher usage does not necessarily translate into stronger customer advocacy.
+
+-   Additionally, customers with higher satisfaction levels tend to exhibit **higher transaction frequency**, suggesting that positive experiences with the platform may encourage more frequent financial activity.
+
+-   Finally, transaction-level analysis reveals that **daily transaction volumes remain stable throughout the year**, with only minor fluctuations observed across the time period. This indicates consistent usage of the fintech platform by its customer base.
+
+Overall, the EDA highlights several key insights into customer behavior, engagement, and financial activity patterns. These findings provide a strong foundation for further analysis in subsequent modules, such as confirmation and predictive modeling, which aim to identify high-value customers and better understand the drivers of customer retention and platform engagement.
 
 # 7. UI Design
 
 # Reference
 
 -   Kam, T. S. (2023). [R for Visual Analytics](https://r4va.netlify.app/).
+-   <https://ggplot2.tidyverse.org/>
+-   <https://r4ds.had.co.nz/exploratory-data-analysis.html>
