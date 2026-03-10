@@ -592,6 +592,30 @@ Overall, the EDA highlights several key insights into customer behavior, engagem
 
 # 7. UI Design
 
+Our target is to provide a clean, intuitive, and structured interface that allows users to explore data insights in an organized way. The interface adopts a **card-based layout**, making different analytical modules easy to identify and navigate.
+
+**Navigation Structure**
+
+-   The application uses a **top navigation bar** that allows users to switch between the main analytical modules.
+
+-   The currently active section is highlighted with a **distinct color indicator**, allowing users to easily identify their current location within the dashboard.
+
+![](images/1.png)
+
+**Home Page Interface**
+
+The Home page serves as the **central overview** of the analytics platform.
+
+-   **Welcome Banner:** Introduces the dashboard purpose & provides brief instructions for users
+
+-   **Feature Cards:** The dashboard presents main analytical modules using colored cards
+
+![](images/2.png)
+
+**Exploratory Data Analysis (EDA) Page** is designed to help users understand the dataset through multiple visual perspectives.
+
+Layout Structure:The page adopts a **two-by-two card layout**, organizing visualizations into separate panels.
+
 # Reference
 
 -   Kam, T. S. (2023). [R for Visual Analytics](https://r4va.netlify.app/).
