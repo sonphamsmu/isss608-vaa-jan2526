@@ -48,6 +48,8 @@ website:
             text: Hands-on Exercise 8c
           - href: Hands-on_Ex/Hands-on_ex09/handson_ex9.html
             text: Hands-on Exercise 9
+          - href: Hands-on_Ex/Hands-on_ex10/handson_ex10.html
+            text: Hands-on Exercise 10
       - text: In-class Exercise
         menu: 
           - href: Inclass_Ex/Inclass_ex01/inclass_ex1.html

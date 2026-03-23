@@ -1,0 +1,203 @@
+---
+title: "Take-home Exercise 2: Prototyping Modules for Shiny Application"
+author: "PHAM Hung Son"
+date: "Mar 02, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+format: html
+---
+
+# 1 Introduction
+
+Financial technology (fintech) has become a critical driver of financial inclusion and digital transformation in emerging markets. However, despite this trend, publicly available datasets integrating real transactional behavior, product usage, customer satisfaction, and digital engagement remain hard-to-find.
+
+The **COFINFAD (Colombian Fintech Financial Analytics Dataset)** addresses this gap by providing a comprehensive 12-month dataset (January - December 2023) covering the complete active customer base of a Colombian fintech company (48,723 customers) and over 3.1 million transaction records.
+
+## 1.1 Purpose of the EDA Module
+
+The objective of this Exploratory Data Analysis (EDA) module is to uncover behavioral, demographic, and engagement patterns that may influence:
+
+-   Product adoption & App engagement
+
+-   Satisfaction and Net Promoter Score (NPS)
+
+-   Transactions Pattern & Value
+
+-   Customer lifetime value (CLV)
+
+## 1.2 Analytical Questions For The Module
+
+The EDA module is structured to address the following key questions:
+
+1.  *How are customers distributed across demographic and income segments?*
+
+2.  *What is the relationship between digital engagement (app logins, feature diversity) and customer loyalty metrics (CLV, NPS)?*
+
+3.  *Are satisfaction and NPS aligned with behavioral indicators such as transaction volume and active products?*
+
+# 2 Getting started
+
+## 2.1 Installing and loading the required libraries
+
+The R packages used in this take-home exercise are:
+
+-   [**tidyverse**](https://www.tidyverse.org/) (i.e. readxl, tidyr, dplyr, ggplot2) for performing data science tasks such as importing, tidying, and wrangling data, as well as creating graphics;
+
+-   [**ggthemes**](https://cran.r-project.org/web/packages/ggthemes/index.html): to use additional themes for **ggplot2**
+
+-   [**ggridges**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) for creating ridgeline plots;
+
+-   [**ggdist**](https://mjskay.github.io/ggdist/) for visualising distributions and uncertainty;
+
+-   [**ggstatsplot**](https://cran.r-project.org/web/packages/ggstatsplot/index.html): to create graphics with details from statistical tests; and
+
+-   [**patchwork**](https://cran.r-project.org/web/packages/patchwork/index.html): to prepare composite figure created using **ggplot2.**
+
+```{r}
+pacman::p_load(tidyverse, ggridges, ggdist, ggstatsplot, patchwork, SmartEDA, knitr, scales)
+```
+
+## 2.2 Importing data
+
+In this exercise, we will use the The [COFINFAD](https://data.mendeley.com/datasets/mhb4zn3258/1) dataset. It is organized into two relational CSV files:
+
+1.  **customer_data.csv:** Contains 54 customer-level attributes including demographics, product holdings, satisfaction metrics, and aggregated behavioral features (one row per customer; 48,723 rows).
+
+2.  **transactions_data.csv:** Contains transaction records over the 12-month period (3,159,157 rows), linked via `customer_id`.
+
+In the code chunk below, `read_csv()` is used to import the two CSV files.
+
+```{r}
+customer_data <- read_csv("data/customer_data.csv")
+transactions_data <- read_csv("data/transactions_data.csv") 
+```
+
+`glimpse()` will be used to check the structure of the data.
+
+```{r}
+glimpse(customer_data)
+glimpse(transactions_data)
+```
+
+**Univariate plots for numeric variables**
+
+```{r}
+ExpData(data = customer_data, type = 1)
+```
+
+```{r}
+ExpNumStat(customer_data, by = "A", gp = NULL, Qnt = c(0.25, 0.5, 0.75), MesofShape = 2)
+```
+
+```{r}
+ExpNumViz(
+  data = customer_data,
+  target = NULL,
+  Page=c(2,2)
+)
+```
+
+```{r}
+ExpNumViz(
+  data = customer_data,
+  target = "app_logins_frequency",
+  nlim = 10,
+  sample = 1,
+  type = 1
+)
+```
+
+**Univariate plots for categorical variables**
+
+```{r}
+ExpCTable(customer_data,Target=NULL,margin=1,clim=10,nlim=3,round=2,bin=NULL,per=T)
+```
+
+```{r}
+ExpCatViz(
+  data = customer_data,
+  target = "gender",
+  margin = 2,
+  sample = 1
+)
+```
+
+```{r}
+ExpCatViz(
+  data = customer_data,
+  target = "gender"
+)
+```
+
+```{r}
+ExpNumViz(customer_data, target = "app_logins_frequency", sample=4)
+```
+
+```{r}
+plot_univariate_smarteda <- function(data, var_name) {
+  
+  x <- data[[var_name]]
+  
+  if (is.numeric(x)) {
+    cat("## Numeric Variable:", var_name, "\n")
+    
+    print(
+      ExpNumStat(
+        data[, var_name, drop = FALSE],
+        by = "A",
+        gp = NULL,
+        Qnt = c(0.25, 0.5, 0.75),
+        MesofShape = 2
+      )
+    )
+    
+    print(
+      ExpNumViz(
+        data = data,
+        target = NULL,
+        nlim = 10,
+        sample = 1,
+        type = 1,
+        col = var_name,
+        theme = "Default"
+      )
+    )
+    
+  } else {
+    cat("## Categorical Variable:", var_name, "\n")
+    
+    print(
+      ExpCatStat(
+        data[, var_name, drop = FALSE],
+        Target = NULL
+        #col = var_name
+      )
+    )
+    
+    print(
+      ExpCatViz(
+        data = data,
+        target = NULL,
+        col = var_name,
+        margin = 2,
+        sample = 1
+      )
+    )
+  }
+}
+```
+
+```{r}
+plot_univariate_smarteda(customer_data, "age")
+plot_univariate_smarteda(customer_data, "gender")
+```
+
+```{r}
+args(ExpNumViz)
+args(ExpCatViz)
+args(ExpCatStat)
+```

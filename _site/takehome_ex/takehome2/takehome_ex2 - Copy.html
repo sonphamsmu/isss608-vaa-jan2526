@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="PHAM Hung Son">
+<meta name="dcterms.date" content="2026-03-02">
+
+<title>Take-home Exercise 2: Prototyping Modules for Shiny Application – isss608-jan2526</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">isss608-jan2526</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex01/handson_ex1.html">
+ <span class="dropdown-text">Hands-on Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex02/handson_ex2.html">
+ <span class="dropdown-text">Hands-on Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex03/handson_ex3.html">
+ <span class="dropdown-text">Hands-on Exercise 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex03/handson_ex3b.html">
+ <span class="dropdown-text">Hands-on Exercise 3b</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex04/handson_ex4.html">
+ <span class="dropdown-text">Hands-on Exercise 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex04/handson_ex4b.html">
+ <span class="dropdown-text">Hands-on Exercise 4b</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex04/handson_ex4c.html">
+ <span class="dropdown-text">Hands-on Exercise 4c</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex04/handson_ex4d.html">
+ <span class="dropdown-text">Hands-on Exercise 4d</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex05/handson_ex5.html">
+ <span class="dropdown-text">Hands-on Exercise 5</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex05/handson_ex5b.html">
+ <span class="dropdown-text">Hands-on Exercise 5b</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex05/handson_ex5c.html">
+ <span class="dropdown-text">Hands-on Exercise 5c</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex05/handson_ex5d.html">
+ <span class="dropdown-text">Hands-on Exercise 5d</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex05/handson_ex5e.html">
+ <span class="dropdown-text">Hands-on Exercise 5e</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex07/handson_ex7.html">
+ <span class="dropdown-text">Hands-on Exercise 7</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex08/handson_ex8.html">
+ <span class="dropdown-text">Hands-on Exercise 8</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex08/handson_ex8b.html">
+ <span class="dropdown-text">Hands-on Exercise 8b</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex08/handson_ex8c.html">
+ <span class="dropdown-text">Hands-on Exercise 8c</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex09/handson_ex9.html">
+ <span class="dropdown-text">Hands-on Exercise 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_ex10/handson_ex10.html">
+ <span class="dropdown-text">Hands-on Exercise 10</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Inclass_Ex/Inclass_ex01/inclass_ex1.html">
+ <span class="dropdown-text">In-class Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Inclass_Ex/Inclass_ex02/inclass_ex2.html">
+ <span class="dropdown-text">In-class Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Inclass_Ex/Inclass_ex03/inclass_ex3.html">
+ <span class="dropdown-text">In-class Exercise 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Inclass_Ex/Inclass_ex04/inclass_ex4.html">
+ <span class="dropdown-text">In-class Exercise 4</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../takehome_ex/takehome1/takehome_ex1.html">
+ <span class="dropdown-text">Take-home Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../takehome_ex/takehome2/takehome_ex2.html">
+ <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1 Introduction</a>
+  <ul class="collapse">
+  <li><a href="#purpose-of-the-eda-module" id="toc-purpose-of-the-eda-module" class="nav-link" data-scroll-target="#purpose-of-the-eda-module">1.1 Purpose of the EDA Module</a></li>
+  <li><a href="#analytical-questions-for-the-module" id="toc-analytical-questions-for-the-module" class="nav-link" data-scroll-target="#analytical-questions-for-the-module">1.2 Analytical Questions For The Module</a></li>
+  </ul></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting started</a>
+  <ul class="collapse">
+  <li><a href="#installing-and-loading-the-required-libraries" id="toc-installing-and-loading-the-required-libraries" class="nav-link" data-scroll-target="#installing-and-loading-the-required-libraries">2.1 Installing and loading the required libraries</a></li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">2.2 Importing data</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Take-home Exercise 2: Prototyping Modules for Shiny Application</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>PHAM Hung Son </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 2, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">March 20, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>1 Introduction</h1>
+<p>Financial technology (fintech) has become a critical driver of financial inclusion and digital transformation in emerging markets. However, despite this trend, publicly available datasets integrating real transactional behavior, product usage, customer satisfaction, and digital engagement remain hard-to-find.</p>
+<p>The <strong>COFINFAD (Colombian Fintech Financial Analytics Dataset)</strong> addresses this gap by providing a comprehensive 12-month dataset (January - December 2023) covering the complete active customer base of a Colombian fintech company (48,723 customers) and over 3.1 million transaction records.</p>
+<section id="purpose-of-the-eda-module" class="level2">
+<h2 class="anchored" data-anchor-id="purpose-of-the-eda-module">1.1 Purpose of the EDA Module</h2>
+<p>The objective of this Exploratory Data Analysis (EDA) module is to uncover behavioral, demographic, and engagement patterns that may influence:</p>
+<ul>
+<li><p>Product adoption &amp; App engagement</p></li>
+<li><p>Satisfaction and Net Promoter Score (NPS)</p></li>
+<li><p>Transactions Pattern &amp; Value</p></li>
+<li><p>Customer lifetime value (CLV)</p></li>
+</ul>
+</section>
+<section id="analytical-questions-for-the-module" class="level2">
+<h2 class="anchored" data-anchor-id="analytical-questions-for-the-module">1.2 Analytical Questions For The Module</h2>
+<p>The EDA module is structured to address the following key questions:</p>
+<ol type="1">
+<li><p><em>How are customers distributed across demographic and income segments?</em></p></li>
+<li><p><em>What is the relationship between digital engagement (app logins, feature diversity) and customer loyalty metrics (CLV, NPS)?</em></p></li>
+<li><p><em>Are satisfaction and NPS aligned with behavioral indicators such as transaction volume and active products?</em></p></li>
+</ol>
+</section>
+</section>
+<section id="getting-started" class="level1">
+<h1>2 Getting started</h1>
+<section id="installing-and-loading-the-required-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="installing-and-loading-the-required-libraries">2.1 Installing and loading the required libraries</h2>
+<p>The R packages used in this take-home exercise are:</p>
+<ul>
+<li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a> (i.e.&nbsp;readxl, tidyr, dplyr, ggplot2) for performing data science tasks such as importing, tidying, and wrangling data, as well as creating graphics;</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/ggthemes/index.html"><strong>ggthemes</strong></a>: to use additional themes for <strong>ggplot2</strong></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html"><strong>ggridges</strong></a> for creating ridgeline plots;</p></li>
+<li><p><a href="https://mjskay.github.io/ggdist/"><strong>ggdist</strong></a> for visualising distributions and uncertainty;</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/ggstatsplot/index.html"><strong>ggstatsplot</strong></a>: to create graphics with details from statistical tests; and</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/patchwork/index.html"><strong>patchwork</strong></a>: to prepare composite figure created using <strong>ggplot2.</strong></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, ggridges, ggdist, ggstatsplot, patchwork, SmartEDA, knitr, scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="importing-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-data">2.2 Importing data</h2>
+<p>In this exercise, we will use the The <a href="https://data.mendeley.com/datasets/mhb4zn3258/1">COFINFAD</a> dataset. It is organized into two relational CSV files:</p>
+<ol type="1">
+<li><p><strong>customer_data.csv:</strong> Contains 54 customer-level attributes including demographics, product holdings, satisfaction metrics, and aggregated behavioral features (one row per customer; 48,723 rows).</p></li>
+<li><p><strong>transactions_data.csv:</strong> Contains transaction records over the 12-month period (3,159,157 rows), linked via <code>customer_id</code>.</p></li>
+</ol>
+<p>In the code chunk below, <code>read_csv()</code> is used to import the two CSV files.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>customer_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/customer_data.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>transactions_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/transactions_data.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>glimpse()</code> will be used to check the structure of the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(customer_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 48,723
+Columns: 54
+$ customer_id                &lt;dbl&gt; 93716481, 49020929, 52690950, 23199751, 619…
+$ age                        &lt;dbl&gt; 44, 44, 45, 45, 44, 45, 44, 44, 45, 44, 44,…
+$ gender                     &lt;chr&gt; "Male", "Male", "Male", "Male", "Female", "…
+$ location                   &lt;chr&gt; "Pereira, Risaralda", "Cali, Valle del Cauc…
+$ income_bracket             &lt;chr&gt; "Very High", "Medium", "High", "High", "Med…
+$ occupation                 &lt;chr&gt; "Engineer", "Construction Worker", "Constru…
+$ education_level            &lt;chr&gt; "Master", "Bachelor", "Bachelor", "High Sch…
+$ marital_status             &lt;chr&gt; "Married", "Married", "Married", "Single", …
+$ household_size             &lt;dbl&gt; 5, 2, 4, 2, 3, 4, 4, 3, 1, 3, 5, 3, 3, 7, 3…
+$ acquisition_channel        &lt;chr&gt; "Partnership", "Paid Ad", "Paid Ad", "Refer…
+$ customer_segment           &lt;chr&gt; "occasional", "regular", "inactive", "inact…
+$ savings_account            &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+$ credit_card                &lt;lgl&gt; TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE…
+$ personal_loan              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, F…
+$ investment_account         &lt;lgl&gt; FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, FALS…
+$ insurance_product          &lt;lgl&gt; TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FAL…
+$ active_products            &lt;dbl&gt; 1, 5, 3, 2, 1, 1, 1, 4, 2, 3, 1, 5, 3, 1, 1…
+$ app_logins_frequency       &lt;dbl&gt; 15, 30, 4, 15, 19, 15, 44, 22, 7, 11, 7, 30…
+$ feature_usage_diversity    &lt;dbl&gt; 3, 0, 4, 4, 1, 4, 6, 1, 1, 6, 3, 1, 2, 1, 3…
+$ bill_payment_user          &lt;lgl&gt; FALSE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE,…
+$ auto_savings_enabled       &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FA…
+$ credit_utilization_ratio   &lt;dbl&gt; 0.17871029, NA, NA, NA, 0.40360553, 0.07786…
+$ international_transactions &lt;dbl&gt; 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0…
+$ failed_transactions        &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0…
+$ tx_count                   &lt;dbl&gt; 76, 10, 10, 23, 18, 15, 24, 45, 134, 13, 18…
+$ avg_tx_value               &lt;dbl&gt; 1679872.4, 5445810.0, 640335.0, 660180.4, 1…
+$ total_tx_volume            &lt;dbl&gt; 127670300, 54458100, 6403350, 15184150, 262…
+$ first_tx                   &lt;date&gt; 2023-01-05, 2023-02-05, 2023-01-31, 2023-0…
+$ last_tx                    &lt;date&gt; 2023-12-25, 2023-12-20, 2023-12-12, 2023-1…
+$ base_satisfaction          &lt;dbl&gt; 9.213372, 6.073093, 8.198643, 7.529577, 6.6…
+$ tx_satisfaction            &lt;dbl&gt; 0.380, 0.050, 0.050, 0.115, 0.090, 0.075, 0…
+$ product_satisfaction       &lt;dbl&gt; 0.6, 0.2, 0.6, 0.4, 0.4, 0.6, 0.4, 0.4, 0.6…
+$ satisfaction_score         &lt;dbl&gt; 5, 3, 4, 4, 3, 4, 4, 4, 5, 4, 4, 5, 4, 3, 4…
+$ nps_score                  &lt;dbl&gt; -7, -46, -29, -31, -47, -29, -34, -36, -4, …
+$ last_survey_date           &lt;date&gt; 2023-12-16, 2023-05-05, 2023-11-16, 2023-0…
+$ support_tickets_count      &lt;dbl&gt; 1, 1, 0, 2, 2, 1, 1, 0, 2, 0, 0, 2, 3, 1, 0…
+$ resolved_tickets_ratio     &lt;dbl&gt; 0.0000000, 1.0000000, 0.0000000, 0.5000000,…
+$ app_store_rating           &lt;dbl&gt; 3.5, 4.0, 5.0, 4.5, 4.0, 4.0, 5.0, 4.5, 4.5…
+$ feedback_sentiment         &lt;chr&gt; "Neutral", "Positive", "Positive", "Positiv…
+$ feature_requests           &lt;chr&gt; "Budgeting tools", NA, NA, "Cryptocurrency …
+$ complaint_topics           &lt;chr&gt; NA, NA, NA, NA, "App performance", NA, NA, …
+$ clv_segment                &lt;chr&gt; "Gold", "Bronze", "Gold", "Bronze", "Gold",…
+$ monthly_transaction_count  &lt;dbl&gt; 1.428571, 1.571429, 2.500000, 1.555556, 2.1…
+$ average_transaction_value  &lt;dbl&gt; 6054025.0, 2127413.6, 3575915.0, 1513353.6,…
+$ total_transaction_volume   &lt;dbl&gt; 60540250, 23401550, 35759150, 21186950, 116…
+$ transaction_frequency      &lt;dbl&gt; 0.03076923, 0.03293413, 0.05000000, 0.04778…
+$ last_transaction_date      &lt;date&gt; 2023-12-05, 2023-12-18, 2023-10-27, 2023-1…
+$ preferred_transaction_type &lt;chr&gt; "Transfer", "Transfer", "Transfer", "Transf…
+$ first_transaction_date     &lt;date&gt; 2023-01-05, 2023-02-05, 2023-01-31, 2023-0…
+$ weekend_transaction_ratio  &lt;dbl&gt; 0.30000000, 0.18181818, 0.30000000, 0.14285…
+$ avg_daily_transactions     &lt;dbl&gt; 0.03076923, 0.03293413, 0.05000000, 0.04778…
+$ customer_tenure            &lt;dbl&gt; 11.633333, 11.500000, 8.766667, 10.733333, …
+$ churn_probability          &lt;dbl&gt; 0.3622688, 0.1817896, 0.3212651, 0.3366287,…
+$ customer_lifetime_value    &lt;dbl&gt; 312414808, 167022286, 19403711, 35978105, 3…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(transactions_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 3,159,157
+Columns: 4
+$ customer_id &lt;dbl&gt; 93716481, 93716481, 93716481, 93716481, 93716481, 93716481…
+$ date        &lt;date&gt; 2023-11-23, 2023-01-05, 2023-11-05, 2023-04-14, 2023-08-0…
+$ amount      &lt;dbl&gt; 1262800, 928900, 1683100, 4507350, 2096150, 2124050, 11087…
+$ type        &lt;chr&gt; "Transfer", "Withdrawal", "Payment", "Payment", "Payment",…</code></pre>
+</div>
+</div>
+<p><strong>Univariate plots for numeric variables</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpData</span>(<span class="at">data =</span> customer_data, <span class="at">type =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                          Descriptions       Value
+1                                   Sample size (nrow)       48723
+2                              No. of variables (ncol)          54
+3                    No. of numeric/interger variables          29
+4                              No. of factor variables           0
+5                                No. of text variables          13
+6                             No. of logical variables           7
+7                          No. of identifier variables           3
+8                                No. of date variables           5
+9             No. of zero variance variables (uniform)           0
+10               %. of variables having complete cases 94.44% (51)
+11   %. of variables having &gt;0% and &lt;50% missing cases   5.56% (3)
+12 %. of variables having &gt;=50% and &lt;90% missing cases      0% (0)
+13          %. of variables having &gt;=90% missing cases      0% (0)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpNumStat</span>(customer_data, <span class="at">by =</span> <span class="st">"A"</span>, <span class="at">gp =</span> <span class="cn">NULL</span>, <span class="at">Qnt =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>), <span class="at">MesofShape =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       Vname Group    TN  nNeg nZero  nPos NegInf PosInf
+3       app_logins_frequency   All 48723     0     0 48723      0      0
+14 average_transaction_value   All 48723     0     0 48723      0      0
+18    avg_daily_transactions   All 48723     0     0 48723      0      0
+7               avg_tx_value   All 48723     0     0 48723      0      0
+9          base_satisfaction   All 48723     0     0 48723      0      0
+20         churn_probability   All 48723     0     0 48723      0      0
+5   credit_utilization_ratio   All 48723     0     0 30460      0      0
+1                customer_id   All 48723     0     0 48723      0      0
+21   customer_lifetime_value   All 48723     0     1 48722      0      0
+19           customer_tenure   All 48723     0     0 48723      0      0
+4    feature_usage_diversity   All 48723     0  7710 41013      0      0
+2             household_size   All 48723     0     0 48723      0      0
+13 monthly_transaction_count   All 48723     0     0 48723      0      0
+11                 nps_score   All 48723 48178   139   406      0      0
+12    resolved_tickets_ratio   All 48723     0 21899 26824      0      0
+15  total_transaction_volume   All 48723     0     0 48723      0      0
+8            total_tx_volume   All 48723     0     0 48723      0      0
+16     transaction_frequency   All 48723     0     0 48723      0      0
+6                   tx_count   All 48723     0     0 48723      0      0
+10           tx_satisfaction   All 48723     0     0 48723      0      0
+17 weekend_transaction_ratio   All 48723     0   464 48259      0      0
+   NA_Value Per_of_Missing           sum          min          max
+3         0          0.000  1.090234e+06        4.000 1.000000e+02
+14        0          0.000  1.736903e+11   318215.000 5.167030e+07
+18        0          0.000  9.089636e+03        0.028 2.157800e+02
+7         0          0.000  1.736903e+11   318215.000 5.167030e+07
+9         0          0.000  3.898550e+05        4.250 1.193700e+01
+20        0          0.000  1.670820e+04        0.114 5.010000e-01
+5     18263         37.483  8.738248e+03        0.000 9.380000e-01
+1         0          0.000  2.681129e+12 10000617.000 9.999980e+07
+21        0          0.000  1.598892e+13        0.000 1.776860e+10
+19        0          0.000  5.541712e+05        4.700 1.196700e+01
+4         0          0.000  1.154510e+05        0.000 1.000000e+01
+2         0          0.000  1.703470e+05        1.000 1.300000e+01
+13        0          0.000  2.809099e+05        1.000 6.455417e+03
+11        0          0.000 -1.303674e+06      -80.000 2.300000e+01
+12        0          0.000  2.466277e+04        0.000 1.000000e+00
+15        0          0.000  1.254485e+13  3182150.000 1.073087e+12
+8         0          0.000  1.254485e+13  3182150.000 1.073087e+12
+16        0          0.000  9.089636e+03        0.028 2.157800e+02
+6         0          0.000  3.159157e+06       10.000 7.746500e+04
+10        0          0.000  8.635945e+03        0.050 1.000000e+00
+17        0          0.000  1.378216e+04        0.000 9.090000e-01
+            mean        median           SD     CV          IQR Skewness
+3         22.376        22.000 1.175100e+01  0.525 1.500000e+01    0.925
+14   3564851.685   1763107.407 3.959443e+06  1.111 3.319422e+06    2.246
+18         0.187         0.058 1.704000e+00  9.135 6.200000e-02   63.444
+7    3564851.685   1763107.407 3.959443e+06  1.111 3.319422e+06    2.246
+9          8.001         8.005 9.990000e-01  0.125 1.351000e+00   -0.005
+20         0.343         0.354 6.700000e-02  0.196 9.000000e-02   -0.605
+5          0.287         0.266 1.600000e-01  0.558 2.290000e-01    0.592
+1   55027986.006  55174470.000 2.592111e+07  0.471 4.453399e+07   -0.004
+21 328159670.787 129681954.231 7.926224e+08  2.415 2.389415e+08    8.791
+19        11.374        11.633 7.200000e-01  0.063 7.000000e-01   -2.240
+4          2.370         2.000 1.745000e+00  0.736 3.000000e+00    0.556
+2          3.496         3.000 1.583000e+00  0.453 2.000000e+00    0.642
+13         5.765         2.000 5.096600e+01  8.840 1.491000e+00   63.504
+11       -26.757       -28.000 1.256100e+01 -0.469 1.500000e+01    0.085
+12         0.506         0.500 4.760000e-01  0.941 1.000000e+00   -0.034
+15 257472847.910  48081150.000 6.211110e+09 24.123 1.002865e+08  129.135
+8  257472847.910  48081150.000 6.211110e+09 24.123 1.002865e+08  129.135
+16         0.187         0.058 1.704000e+00  9.135 6.200000e-02   63.444
+6         64.839        18.000 6.119340e+02  9.438 2.300000e+01   63.420
+10         0.177         0.090 2.170000e-01  1.224 1.150000e-01    2.659
+17         0.283         0.280 1.040000e-01  0.369 1.260000e-01    0.291
+    Kurtosis          25%           50%           75%
+3      1.273       15.000        22.000        30.000
+14     5.657  1339114.486   1763107.407   4658536.364
+18  6194.946        0.042         0.058         0.103
+7      5.657  1339114.486   1763107.407   4658536.364
+9      0.003        7.326         8.005         8.676
+20    -0.083        0.303         0.354         0.393
+5     -0.128        0.162         0.266         0.391
+1     -1.189 32708345.500  55174470.000  77242332.000
+21   112.672 58414383.328 129681954.231 297355900.211
+19     6.790       11.167        11.633        11.867
+4     -0.154        1.000         2.000         4.000
+2      0.454        2.000         3.000         4.000
+13  6203.221        1.600         2.000         3.091
+11     0.095      -34.000       -28.000       -19.000
+12    -1.902        0.000         0.500         1.000
+15 19887.979 20158450.000  48081150.000 120445000.000
+8  19887.979 20158450.000  48081150.000 120445000.000
+16  6194.946        0.042         0.058         0.103
+6   6191.354       12.000        18.000        35.000
+10     6.579        0.060         0.090         0.175
+17     0.805        0.214         0.280         0.340</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpNumViz</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> customer_data,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">target =</span> <span class="cn">NULL</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Page=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$`0`</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-6-8.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Univariate plots for categorical variables</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpCTable</span>(customer_data,<span class="at">Target=</span><span class="cn">NULL</span>,<span class="at">margin=</span><span class="dv">1</span>,<span class="at">clim=</span><span class="dv">10</span>,<span class="at">nlim=</span><span class="dv">3</span>,<span class="at">round=</span><span class="dv">2</span>,<span class="at">bin=</span><span class="cn">NULL</span>,<span class="at">per=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                     Variable              Valid Frequency Percent CumPercent
+1                      gender             Female     24033   49.33      49.33
+2                      gender               Male     23761   48.77      98.10
+3                      gender              Other       929    1.91     100.01
+4                      gender              TOTAL     48723      NA         NA
+5              income_bracket               High     12180   25.00      25.00
+6              income_bracket                Low     14617   30.00      55.00
+7              income_bracket             Medium     19489   40.00      95.00
+8              income_bracket          Very High      2437    5.00     100.00
+9              income_bracket              TOTAL     48723      NA         NA
+10            education_level           Bachelor     19685   40.40      40.40
+11            education_level        High School     19263   39.54      79.94
+12            education_level             Master      7359   15.10      95.04
+13            education_level                PhD      2416    4.96     100.00
+14            education_level              TOTAL     48723      NA         NA
+15             marital_status           Divorced      4954   10.17      10.17
+16             marital_status            Married     19615   40.26      50.43
+17             marital_status             Single     21769   44.68      95.11
+18             marital_status            Widowed      2385    4.90     100.01
+19             marital_status              TOTAL     48723      NA         NA
+20        acquisition_channel            Organic     19500   40.02      40.02
+21        acquisition_channel            Paid Ad      9764   20.04      60.06
+22        acquisition_channel        Partnership      4913   10.08      70.14
+23        acquisition_channel           Referral     14546   29.85      99.99
+24        acquisition_channel              TOTAL     48723      NA         NA
+25           customer_segment           inactive      9904   20.33      20.33
+26           customer_segment         occasional     19391   39.80      60.13
+27           customer_segment              power      4860    9.97      70.10
+28           customer_segment            regular     14568   29.90     100.00
+29           customer_segment              TOTAL     48723      NA         NA
+30         feedback_sentiment           Negative      1480    3.04       3.04
+31         feedback_sentiment            Neutral      8346   17.13      20.17
+32         feedback_sentiment           Positive     38897   79.83     100.00
+33         feedback_sentiment              TOTAL     48723      NA         NA
+34           complaint_topics   Account security      4841    9.94       9.94
+35           complaint_topics    App performance      4818    9.89      19.83
+36           complaint_topics   Customer service      4940   10.14      29.97
+37           complaint_topics               Fees      4911   10.08      40.05
+38           complaint_topics                 NA     24346   49.97      90.02
+39           complaint_topics Transaction issues      4867    9.99     100.01
+40           complaint_topics              TOTAL     48723      NA         NA
+41                clv_segment             Bronze     12181   25.00      25.00
+42                clv_segment               Gold     12180   25.00      50.00
+43                clv_segment           Platinum     12181   25.00      75.00
+44                clv_segment             Silver     12181   25.00     100.00
+45                clv_segment              TOTAL     48723      NA         NA
+46 preferred_transaction_type            Deposit       441    0.91       0.91
+47 preferred_transaction_type            Payment     10002   20.53      21.44
+48 preferred_transaction_type           Transfer     36954   75.85      97.29
+49 preferred_transaction_type         Withdrawal      1326    2.72     100.01
+50 preferred_transaction_type              TOTAL     48723      NA         NA</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpCatViz</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> customer_data,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">target =</span> <span class="st">"gender"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">margin =</span> <span class="dv">2</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample =</span> <span class="dv">1</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpCatViz</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> customer_data,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">target =</span> <span class="st">"gender"</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[4]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[5]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[6]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[7]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[8]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-8.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[9]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-9.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[10]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-10.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[11]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-11.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[12]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-12.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[13]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-13.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[14]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-14.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[15]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-15.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[16]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-16.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[17]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-9-17.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ExpNumViz</span>(customer_data, <span class="at">target =</span> <span class="st">"app_logins_frequency"</span>, <span class="at">sample=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehome_ex2---Copy_files/figure-html/unnamed-chunk-10-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
